@@ -1,36 +1,10 @@
 
 with customers as (
-
     select * from {{ ref('stg_customers')}}
---     select
---     id as customer_id,
---     first_name,
---     last_name
-
--- from raw.jaffle_shop.customers
-
 ),
 
-orders as (
-
-    select * from {{ ref('stg_orders') }}
---     select
---     id as order_id,
---     user_id as customer_id,
---     order_date,
---     status
-
--- from raw.jaffle_shop.orders
-
-),
-payments as (
-    select * from {{ ref('stg_payments') }}
-),
-order_payment as (
-    select customer_id,order_date,order_id,amount
-    from orders 
-    inner join payments using (order_id)
-
+fct_orders as (
+    select * from {{ ref('fct_orders') }}
 ),
 
 customer_orders as (
@@ -42,7 +16,7 @@ customer_orders as (
         max(order_date) as most_recent_order_date,
         count(order_id) as number_of_orders,
         sum(amount) as lifetime_value
-    from order_payment
+    from fct_orders
 
     group by 1
 
